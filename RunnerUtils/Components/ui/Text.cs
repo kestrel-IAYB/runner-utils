@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Fleece;
+using UnityEngine;
 
 namespace RunnerUtils.Components.UI
 {
@@ -15,7 +16,7 @@ namespace RunnerUtils.Components.UI
         // see https://kaiclavier.com/docs/Fleece.html#what-is-a-parser
         public static Jumper MakeJumper(string text)
         {
-            Passage customPassage = new();
+            var customPassage = ScriptableObject.CreateInstance<Passage>();
             // trying to protect from collisions. if I'm honest with you I don't even know what would happen if we did collide
             customPassage.id = Story.active.passages.Count + 100000 + currentOffset++;
             customPassage.text = text;
