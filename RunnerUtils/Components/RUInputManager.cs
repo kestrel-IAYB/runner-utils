@@ -136,7 +136,7 @@ public class RUInputManager
             defaultKeyPath: "<Keyboard>/leftBracket",
             action: () => {
                 LocationSave.SaveLocation();
-                Mod.Igl.LogLine($"Saved location {(Mod.saveLocation_verbose.Value ? LocationSave.StringLoc : "")}");
+                Mod.Igl.LogLine($"Saved location {(RunnerUtilsSettings.SaveLocationVerboseEnabled ? LocationSave.StringLoc : "")}");
             }
         ),
         new(
@@ -147,7 +147,7 @@ public class RUInputManager
             action: () => {
                 if (LocationSave.savedPosition is not null) {
                     LocationSave.RestoreLocation();
-                    Mod.Igl.LogLine($"Loaded previous location {(Mod.saveLocation_verbose.Value ? LocationSave.StringLoc : "")}");
+                    Mod.Igl.LogLine($"Loaded previous location {(RunnerUtilsSettings.SaveLocationVerboseEnabled ? LocationSave.StringLoc : "")}");
                 } else {
                     Mod.Igl.LogLine("No location saved!");
                 }

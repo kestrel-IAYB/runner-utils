@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RunnerUtils.Components.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ public static class SnowmanPercent
     {
         [HarmonyPostfix]
         public static void Postfix() {
-            if (!Mod.snowmanPercent.Value) return;
+            if (!RunnerUtilsSettings.SnowmanPercentEnabled) return;
             float time = GameManager.instance.levelController.GetCombatTimer().GetTime();
             GameManager.instance.player.GetHUD().GetNotificationPopUp().TriggerPopUp($"Snowman%: {time:0.00}", HUDNotificationPopUp.ThreatLevel.High);
         }
