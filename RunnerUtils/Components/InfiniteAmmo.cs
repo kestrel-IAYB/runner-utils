@@ -19,11 +19,6 @@ public class InfiniteAmmo : ComponentBase<InfiniteAmmo>
         ReloadSlots();
     }
 
-    public override void Toggle() {
-        base.Toggle();
-        ReloadSlots();
-    }
-
     static void ReloadSlots() {
         try {
             GameManager.instance.player.GetHUD().GetAmmoIndicator()

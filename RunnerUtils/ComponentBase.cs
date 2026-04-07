@@ -10,7 +10,7 @@ public abstract class ComponentBase
     public abstract string Identifier { get; }
     public abstract bool ShowOnFairPlay { get; }
 
-    public virtual void Toggle() {
+    public void Toggle() {
         if (enabled)
         {
             Disable();
