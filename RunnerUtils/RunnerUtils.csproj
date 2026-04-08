@@ -1,137 +1,68 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A79CD55A-B3B1-464F-AF67-38BB052B77BB}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RunnerUtils</RootNamespace>
     <AssemblyName>RunnerUtils</AssemblyName>
-    <LangVersion>latest</LangVersion>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <Nullable>disable</Nullable>
+    <Product>RunnerUtils</Product>
+    <GUID>kestrel.iamyourbeast.runnerutils</GUID>
+    <Description>Utilities for IAYB speedrunning </Description>
+    <Version>2.4.2</Version>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>preview</LangVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <!-- https://github.com/BepInEx/BepInEx.Analyzers/pull/6 oh my god PLEASE someone merge this -->
+    <NoWarn>1701;1702;Harmony003;</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <PropertyGroup Condition="'$(GameDir)' == ''">
+    <GameDir>C:\Program Files (x86)\Steam\steamapps\common\I Am Your Beast</GameDir>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <PropertyGroup Condition="'$(BepInExDir)' == ''">
+    <BepInExDir>$(GameDir)\BepInEx</BepInExDir>
+    <PreloaderPath>$(BepInExDir)\core\BepInEx.Preloader.dll</PreloaderPath>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <GameLibDir>$(GameDir)\I Am Your Beast_Data\Managed</GameLibDir>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.10.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libs\0Harmony.dll</HintPath>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="5.4.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3" />
+    <PackageReference Include="UnityEngine.Modules" Version="2022.3.5" IncludeAssets="compile" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp" Publicize="true">
+      <HintPath>$(GameLibDir)\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\Libs\Assembly-CSharp-publicized.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>..\..\Libs\BepInEx.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx.Harmony">
-      <HintPath>..\..\Libs\BepInEx.Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx.Preloader">
-      <HintPath>..\..\Libs\BepInEx.Preloader.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoMod.Utils">
-      <HintPath>..\..\Libs\MonoMod.Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
     <Reference Include="Unity.InputSystem">
-      <HintPath>..\..\Libs\Unity.InputSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Universal.Runtime">
-      <HintPath>..\..\Libs\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
+      <HintPath>$(GameLibDir)\Unity.InputSystem.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\..\Libs\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\Libs\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libs\UnityEngine.AssetBundleModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\Libs\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>..\..\Libs\UnityEngine.InputLegacyModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>..\..\Libs\UnityEngine.PhysicsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TerrainModule">
-      <HintPath>..\..\Libs\UnityEngine.TerrainModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libs\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>$(GameLibDir)\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\Libs\UnityEngine.UI.dll</HintPath>
+      <HintPath>$(GameLibDir)\UnityEngine.UI.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UIModule">
-      <HintPath>..\..\Libs\UnityEngine.UIModule.dll</HintPath>
+    <Reference Include="Unity.RenderPipelines.Universal.Runtime">
+      <HintPath>$(GameLibDir)\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="ComponentBase.cs" />
-    <Compile Include="Components\AutoJump.cs" />
-    <Compile Include="Components\HardFallOverlay.cs" />
-    <Compile Include="Components\InfiniteAmmo.cs" />
-    <Compile Include="Components\IntroSplashCardSkip.cs" />
-    <Compile Include="Components\RUInputManager.cs" />
-    <Compile Include="Components\UI\Base.cs" />
-    <Compile Include="Components\UI\Rebinding.cs" />
-    <Compile Include="Components\UI\RunnerUtilsSettings.cs" />
-    <Compile Include="Components\UI\Text.cs" />
-    <Compile Include="Components\ViewCones.cs" />
-    <Compile Include="FairPlay.cs" />
-    <Compile Include="InGameLog.cs" />
-    <Compile Include="Components\LocationSave.cs" />
-    <Compile Include="Components\MovementDebug.cs" />
-    <Compile Include="Components\PauseTime.cs" />
-    <Compile Include="Components\SnowmanPercent.cs" />
-    <Compile Include="Components\ThrowCam.cs" />
-    <Compile Include="Components\WalkabilityOverlay.cs" />
-    <Compile Include="Mod.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Components\ShowTriggers.cs" />
+    <None Include=".thunderstore\**" />
+    <Content Include="RunnerUtils.csproj.user" />
   </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <Content Include="..\README.md">
-      <Link>README.md</Link>
-    </Content>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).dll" "$(IAYB_PATH)\BepInEx\plugins\";
-"$(IAYB_PATH)\I Am Your Beast.exe";</PostBuildEvent>
-  </PropertyGroup>
+  
+  <Target Name="CopyDllToGame" AfterTargets="PostBuildEvent">
+    <Copy SourceFiles="$(TargetDir)$(TargetName).dll" DestinationFolder="$(BepInExDir)\plugins\kestrel-RunnerUtils-dev" />
+  </Target>
+  
+  <!-- TODO make configurable through .user, support linux (with xdg-open probably) -->
+  <Target Name="LaunchGameThroughSteam" AfterTargets="CopyDllToGame">
+    <Exec Command="start steam://rungameid/1876590 --doorstop-enabled true --doorstop-target-assembly $(PreloaderPath)" />
+  </Target>
 </Project>

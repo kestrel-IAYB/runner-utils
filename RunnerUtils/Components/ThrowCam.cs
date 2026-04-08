@@ -1,14 +1,10 @@
-﻿using HarmonyLib;
+﻿using System;
+using AimAssist;
+using HarmonyLib;
+using RunnerUtils.Components.UI;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AimAssist;
 using Object = UnityEngine.Object;
-using RunnerUtils.Components.UI;
 
 namespace RunnerUtils.Components;
 

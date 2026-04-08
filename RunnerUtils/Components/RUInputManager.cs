@@ -1,22 +1,7 @@
-﻿using BepInEx.Configuration;
-using Enemy;
-using Fleece;
-using HarmonyLib;
-using RunnerUtils.Components.UI;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
-using TMPro;
-using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.EnhancedTouch;
-using UnityEngine.UI;
-using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
+using Enemy;
+using RunnerUtils.Components.UI;
 
 namespace RunnerUtils.Components;
 

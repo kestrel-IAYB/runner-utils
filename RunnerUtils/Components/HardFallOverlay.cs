@@ -1,6 +1,6 @@
+using HarmonyLib;
 using TMPro;
 using UnityEngine;
-using HarmonyLib;
 
 namespace RunnerUtils.Components;
 

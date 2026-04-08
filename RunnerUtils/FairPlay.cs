@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using RunnerUtils.Components;
+﻿using RunnerUtils.Components;
 using RunnerUtils.Components.UI;
+using UnityEngine;
 
 namespace RunnerUtils;
 

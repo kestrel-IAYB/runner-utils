@@ -1,15 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using UnityEngine;
+using BepInEx.Configuration;
 using Fleece;
 using UnityEngine.UI;
-using BepInEx;
-using BepInEx.Configuration;
-using TMPro;
 
 namespace RunnerUtils.Components.UI;
 internal class RunnerUtilsSettings

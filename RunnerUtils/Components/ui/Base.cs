@@ -1,16 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using UnityEngine;
-using static RunnerUtils.Components.RUInputManager;
 using Fleece;
+using HarmonyLib;
 using TMPro;
-using UnityEngine.InputSystem;
+using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 namespace RunnerUtils.Components.UI
 {
