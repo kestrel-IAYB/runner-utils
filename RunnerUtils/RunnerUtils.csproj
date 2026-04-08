@@ -88,6 +88,10 @@
     <Reference Include="UnityEngine.TerrainModule">
       <HintPath>..\..\Libs\UnityEngine.TerrainModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\Libs\UnityEngine.UI.dll</HintPath>
     </Reference>
@@ -100,6 +104,7 @@
     <Compile Include="Components\AutoJump.cs" />
     <Compile Include="Components\HardFallOverlay.cs" />
     <Compile Include="Components\InfiniteAmmo.cs" />
+    <Compile Include="Components\IntroSplashCardSkip.cs" />
     <Compile Include="Components\RUInputManager.cs" />
     <Compile Include="Components\UI\Base.cs" />
     <Compile Include="Components\UI\Rebinding.cs" />

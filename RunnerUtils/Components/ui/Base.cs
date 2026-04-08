@@ -55,6 +55,13 @@ namespace RunnerUtils.Components.UI
                     var newMenu = UnityEngine.Object.Instantiate(__instance.subMenus[0].gameObject, listingAnchor.transform);
                     newMenu.name = $"{customTabInfo.tabName} Settings";
 
+                    // clear out the children and component
+                    foreach (Transform child in newMenu.transform)
+                    {
+                        UnityEngine.Object.Destroy(child.gameObject);
+                    }
+                    UnityEngine.Object.Destroy(newMenu.GetComponent<UISettingsSubMenuVisual>());
+
                     // add our custom menu
                     var uiSettingsSubMenuCustom = newMenu.AddComponent(customTabInfo.classType) as UISettingsSubMenu;
                     // TODO would be cool to make this text yellow or something configurable
@@ -70,7 +77,7 @@ namespace RunnerUtils.Components.UI
         }
 
         // Now for all the menu elements you can make
-        public static UISettingsOptionToggle MakeToggleOption(Transform parent, Jumper text)
+        public static UISettingsOptionToggle MakeToggleOption(Transform parent, Jumper text, bool initialValue)
         {
             // using 0 (visual), 2 (windowed) as our prefab for a toggle
             GameObject attemptCountShowToggle = UnityEngine.Object.Instantiate(
@@ -80,10 +87,13 @@ namespace RunnerUtils.Components.UI
             var textSetter = attemptCountShowToggle.transform.GetChild(0).gameObject.GetComponent<FleeceTextSetter>();
             textSetter.passage = text;
 
-            return attemptCountShowToggle.GetComponent<UISettingsOptionToggle>();
+            var component = attemptCountShowToggle.GetComponent<UISettingsOptionToggle>();
+            component.SetToggled(initialValue);
+
+            return component;
         }
 
-        public static void MakeHeading(Transform parent, string text, string subtitle = null)
+        public static GameObject MakeHeading(Transform parent, string text, string subtitle = null)
         {
             // using 5 (assist), 0 (disclaimer), 0 (Text (TMP) (1)) as our prefab for a heading
             GameObject disclaimer = UnityEngine.Object.Instantiate(
@@ -116,6 +126,8 @@ namespace RunnerUtils.Components.UI
             {
                 UnityEngine.Object.Destroy(subtitleComp.gameObject);
             }
+
+            return disclaimer;
         }
 
         // To make a tab's content scrollable
@@ -224,6 +236,7 @@ namespace RunnerUtils.Components.UI
             contentRT.anchorMax = Vector2.one;
             contentRT.offsetMin = Vector2.zero;
             contentRT.offsetMax = Vector2.zero;
+            contentRT.pivot = new Vector2(0, 1);
 
             scrollRect.viewport = viewportRT;
             scrollRect.content = contentRT;
@@ -246,6 +259,7 @@ namespace RunnerUtils.Components.UI
             newLayout.childControlHeight = oldLayout.childControlHeight;
             newLayout.childForceExpandWidth = oldLayout.childForceExpandWidth;
             newLayout.childForceExpandHeight = oldLayout.childForceExpandHeight;
+            newLayout.childAlignment = TextAnchor.UpperCenter;
 
             GameObject.Destroy(oldLayout); // Done with you
 

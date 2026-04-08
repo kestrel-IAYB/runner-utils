@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AimAssist;
 using Object = UnityEngine.Object;
+using RunnerUtils.Components.UI;
 
 namespace RunnerUtils.Components;
 
@@ -21,8 +22,8 @@ public static class ThrowCam
     public static bool cameraAvailable;
 
     private static void UpdatePos(Transform anchor, Vector3 velocity) {
-        m_obj.transform.position = (anchor.position-(velocity*Mod.throwCam_rangeScalar.Value));
-        if (Mod.throwCam_unlockCamera.Value) {
+        m_obj.transform.position = (anchor.position-(velocity*RunnerUtilsSettings.ThrowCamCameraRange));
+        if (RunnerUtilsSettings.ThrowCamUnlockCameraEnabled) {
             m_obj.transform.rotation = GameManager.instance.cameraManager.GetArmCamera().transform.rotation;
         } else {
             m_obj.transform.LookAt(anchor);
@@ -55,7 +56,7 @@ public static class ThrowCam
         m_cam.enabled = false;
 
         cameraAvailable = true;
-        if (Mod.throwCam_autoSwitch.Value) {
+        if (RunnerUtilsSettings.ThrowCamAutoSwitchEnabled) {
             ToggleCam();
         }
     }
