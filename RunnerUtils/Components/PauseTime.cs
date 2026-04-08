@@ -21,10 +21,9 @@ public class PauseTime : ComponentBase<PauseTime>
     
     // TimeManager is most likely initialized once LevelController.Initialize is called
     // So it's reasonable to init timescales here
-    [HarmonyPatch(typeof(LevelController))]
+    [HarmonyPatch(typeof(LevelController), nameof(LevelController.Initialize))]
     public class LevelControllerPatch
     {
-        [HarmonyPatch("Initialize")]
         [HarmonyPostfix]
         public static void InitScale() {
             m_timeScale = GameManager.instance.timeManager.CreateTimeScale(Instance.enabled?0:1);

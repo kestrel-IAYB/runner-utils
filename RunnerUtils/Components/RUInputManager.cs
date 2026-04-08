@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Enemy;
-using RunnerUtils.Components.UI;
+using RunnerUtils.UI;
 
 namespace RunnerUtils.Components;
 
@@ -9,11 +9,11 @@ public class RUInputManager
 {
     public struct BindingInfo(string identifier, Action action, string guidKbm, string guidGamepad, string defaultKeyPath = Rebinding.UNBOUND_KEY)
     {
-        public Action action = action;
-        public string identifier = identifier;
-        public string guidKbm = guidKbm;
-        public string guidGamepad = guidGamepad;
-        public string defaultKeyPath = defaultKeyPath;
+        public readonly Action action = action;
+        public readonly string identifier = identifier;
+        public readonly string guidKbm = guidKbm;
+        public readonly string guidGamepad = guidGamepad;
+        public readonly string defaultKeyPath = defaultKeyPath;
     }
 
     public static List<BindingInfo> Bindings { get; } = [
@@ -121,7 +121,7 @@ public class RUInputManager
             defaultKeyPath: "<Keyboard>/leftBracket",
             action: () => {
                 LocationSave.SaveLocation();
-                Mod.Igl.LogLine($"Saved location {(RunnerUtilsSettings.SaveLocationVerboseEnabled ? LocationSave.StringLoc : "")}");
+                Mod.Igl.LogLine($"Saved location {(Configs.SaveLocationVerboseEnabled ? LocationSave.StringLoc : "")}");
             }
         ),
         new(
@@ -132,7 +132,7 @@ public class RUInputManager
             action: () => {
                 if (LocationSave.savedPosition is not null) {
                     LocationSave.RestoreLocation();
-                    Mod.Igl.LogLine($"Loaded previous location {(RunnerUtilsSettings.SaveLocationVerboseEnabled ? LocationSave.StringLoc : "")}");
+                    Mod.Igl.LogLine($"Loaded previous location {(Configs.SaveLocationVerboseEnabled ? LocationSave.StringLoc : "")}");
                 } else {
                     Mod.Igl.LogLine("No location saved!");
                 }

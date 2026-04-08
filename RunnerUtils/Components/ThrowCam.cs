@@ -1,7 +1,6 @@
-﻿using System;
-using AimAssist;
+﻿using AimAssist;
 using HarmonyLib;
-using RunnerUtils.Components.UI;
+using RunnerUtils.UI;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using Object = UnityEngine.Object;
@@ -18,8 +17,8 @@ public static class ThrowCam
     public static bool cameraAvailable;
 
     private static void UpdatePos(Transform anchor, Vector3 velocity) {
-        m_obj.transform.position = (anchor.position-(velocity*RunnerUtilsSettings.ThrowCamCameraRange));
-        if (RunnerUtilsSettings.ThrowCamUnlockCameraEnabled) {
+        m_obj.transform.position = (anchor.position-(velocity*Configs.ThrowCamRangeScale));
+        if (Configs.ThrowCamUnlockCameraEnabled) {
             m_obj.transform.rotation = GameManager.instance.cameraManager.GetArmCamera().transform.rotation;
         } else {
             m_obj.transform.LookAt(anchor);
@@ -39,7 +38,7 @@ public static class ThrowCam
     public static void ToggleCam() {
         m_oldCam.enabled = !m_oldCam.enabled;
         m_cam.enabled = !m_cam.enabled;
-        GameObject reticle = GameManager.instance.player.GetHUD().GetReticle().gameObject;
+        var reticle = GameManager.instance.player.GetHUD().GetReticle().gameObject;
         reticle.SetActive(!reticle.activeInHierarchy);
     }
 
@@ -52,64 +51,64 @@ public static class ThrowCam
         m_cam.enabled = false;
 
         cameraAvailable = true;
-        if (RunnerUtilsSettings.ThrowCamAutoSwitchEnabled) {
+        if (Configs.ThrowCamAutoSwitchEnabled) {
             ToggleCam();
         }
     }
 
     [HarmonyPatch(typeof(PlayerWeaponToss))]
-    public static class WeaponToss {
-
-        [HarmonyPatch("Initialize", new Type[] { typeof(WeaponPickup) , typeof(AimTarget) })]
+    public static class PlayerWeaponTossPatch
+    {
+        [HarmonyPatch(nameof(PlayerWeaponToss.Initialize), typeof(WeaponPickup), typeof(AimTarget))]
         [HarmonyPostfix]
-        public static void InitPostfix(ref TossedEquipment ___tossedEquipment) {
+        public static void SetupCamOnInit(ref TossedEquipment ___tossedEquipment) {
             if (cameraAvailable) Reset();
             SetupCam();
         }
 
-        [HarmonyPatch("Update")]
+        [HarmonyPatch(nameof(PlayerWeaponToss.Update))]
         [HarmonyPostfix]
-        public static void UpdatePostfix(ref bool ___hitSurface, ref Transform ___tiltAnchor, ref Transform ___spinAnchor) {
+        public static void UpdateCamPosition(ref bool ___hitSurface, ref Transform ___tiltAnchor, ref Transform ___spinAnchor) {
             if (___hitSurface || !cameraAvailable) return;
             UpdatePos(___tiltAnchor, m_velocity);
         }
 
-        [HarmonyPatch("OnCollisionEnter")]
+        [HarmonyPatch(nameof(PlayerWeaponToss.OnCollisionEnter))]
         [HarmonyPostfix]
-        public static void CollisionEnterPostfix() {
+        public static void ResetOnCollision() {
             Reset();
         }
 
-        [HarmonyPatch("FixedUpdate")]
+        [HarmonyPatch(nameof(PlayerWeaponToss.FixedUpdate))]
         [HarmonyPostfix]
-        public static void FixedUpdatePostfix(float ___speed, float ___gravity, Transform ___tiltAnchor) {
-            Vector3 a = ___tiltAnchor.parent.transform.forward * ___speed;
-            a += Vector3.down * ___gravity;
-            m_velocity = a;
+        public static void UpdateVelocity(float ___speed, float ___gravity, Transform ___tiltAnchor) {
+            var newVelocity = ___tiltAnchor.parent.transform.forward * ___speed;
+            newVelocity += Vector3.down * ___gravity;
+            m_velocity = newVelocity;
         }
     }
 
 
     [HarmonyPatch(typeof(TossedEquipment))]
-    public static class EquipmentToss
+    public static class TossedEquipmentPatch
     {
-        [HarmonyPatch("Initialize")]
+        [HarmonyPatch(nameof(TossedEquipment.Initialize))]
         [HarmonyPostfix]
-        public static void InitPostfix() {
+        public static void SetupCamOnInit() {
             if (cameraAvailable) Reset();
             SetupCam();
         }
 
-        [HarmonyPatch("Update")]
+        [HarmonyPatch(nameof(TossedEquipment.Update))]
         [HarmonyPostfix]
-        public static void UpdatePostfix(ref bool ___collided, ref Rigidbody ___rb) {
+        public static void UpdateCamPosition(ref bool ___collided, ref Rigidbody ___rb) {
             if (___collided || !cameraAvailable) return;
             UpdatePos(___rb.gameObject.transform, ___rb.velocity);
         }
 
-        [HarmonyPatch("OnCollisionEnter")]
+        [HarmonyPatch(nameof(TossedEquipment.OnCollisionEnter))]
         [HarmonyPostfix]
-        public static void CollisionEnterPostfix() {
+        public static void ResetOnCollision() {
             Reset();
         }
     }

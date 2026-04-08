@@ -1,9 +1,9 @@
 ﻿using Fleece;
 using UnityEngine;
 
-namespace RunnerUtils.Components.UI
+namespace RunnerUtils.UI
 {
-    internal class Text
+    internal class FleeceUtil
     {
         private static int currentOffset = 0;
 

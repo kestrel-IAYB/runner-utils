@@ -19,7 +19,7 @@ public class InfiniteAmmo : ComponentBase<InfiniteAmmo>
         ReloadSlots();
     }
 
-    static void ReloadSlots() {
+    private static void ReloadSlots() {
         try {
             GameManager.instance.player.GetHUD().GetAmmoIndicator()
                 .LoadInSlots(GameManager.instance.player.GetArmScript().GetEquippedWeapon());
@@ -37,10 +37,10 @@ public class InfiniteAmmo : ComponentBase<InfiniteAmmo>
     }
 
     [HarmonyPatch(typeof(HUDAmmoIndicator), nameof(HUDAmmoIndicator.LoadInSlots))]
-    public class PatchColorAmmoSlots
+    public class HUDAmmoIndicatorPatch
     {
         [HarmonyPostfix]
-        public static void Postfix(ref List<HUDAmmoIndicatorSlot> ___spawnedSlots) {
+        public static void ColorSlots(ref List<HUDAmmoIndicatorSlot> ___spawnedSlots) {
             if (Instance.enabled) {
                 ColorAmmoSlots(___spawnedSlots, Color.red);
             }
@@ -54,17 +54,16 @@ public class InfiniteAmmo : ComponentBase<InfiniteAmmo>
     }
 
     [HarmonyPatch(typeof(DebugManager), nameof(DebugManager.GetInfiniteAmmo))]
-    public class PatchInfiniteAmmo
+    public class DebugManagerPatch
     {
         [HarmonyPrefix]
-        public static bool Prefix(ref bool __result) {
+        public static bool SetInfiniteAmmo(ref bool __result) {
             if (Instance.enabled) {
                 __result = true;
                 return false;
             }
-            else {
-                return true;
-            }
+
+            return true;
         }
     }
 }

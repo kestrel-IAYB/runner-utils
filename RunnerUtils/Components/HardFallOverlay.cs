@@ -29,10 +29,9 @@ public class HardFallOverlay : ComponentBase<HardFallOverlay>
         transform.anchoredPosition = new Vector2(-1085, -645);
     }
 
-    [HarmonyPatch(typeof(PlayerMovement))]
+    [HarmonyPatch(typeof(PlayerMovement), nameof(PlayerMovement.Update))]
     public class PlayerMovementPatch
     {
-        [HarmonyPatch("Update")]
         [HarmonyPostfix]
         public static void UpdateIndicator(PlayerMovement __instance) {
             Instance.m_obj?.SetActive(Instance.enabled);

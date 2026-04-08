@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Enemy;
 using Equipment;
 using HarmonyLib;
@@ -113,14 +114,14 @@ public static class ShowTriggers
     public static void RegisterAllExcluding(Type[] Ts) {
         registry.Clear();
         foreach (var obj in Object.FindObjectsOfType<EventTriggerBoxPlayer>(true)) {
-            bool yeah = true;
-            foreach (Type t in Ts) {
+            bool isOfCorrectType = true;
+            foreach (var t in Ts) {
                 if (obj.gameObject.GetComponent(t)) {
-                    yeah = false;
+                    isOfCorrectType = false;
                     break;
                 }
             }
-            if (yeah) RegisterObj(obj);
+            if (isOfCorrectType) RegisterObj(obj);
         }
     }
 
@@ -148,7 +149,7 @@ public static class ShowTriggers
             filter = obj.AddComponent<MeshFilter>();
         }
 
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         Mesh cubeMesh = cube.GetComponent<MeshFilter>().sharedMesh;
         Object.Destroy(cube);
         Mesh scaled = Object.Instantiate(cubeMesh);
@@ -169,7 +170,7 @@ public static class ShowTriggers
 
     private static void RegisterObj(EventTriggerBoxPlayer obj){
 
-        Color col = new Color(0, 1, 0, 0.25f);
+        var col = new Color(0, 1, 0, 0.25f);
 
         UnityEvent onTrigger = obj.onTrigger;
         int eventCount = onTrigger?.GetPersistentEventCount() ?? 0;
@@ -214,8 +215,8 @@ public static class ShowTriggers
                 col = color;
         }
 
-        foreach (var kv in triggerColors) {
-            if (obj.gameObject.GetComponent(kv.Key)) col = kv.Value;
+        foreach (var kv in triggerColors.Where(kv => obj.gameObject.GetComponent(kv.Key))) {
+            col = kv.Value;
         }
 
         MakeVisible(obj.gameObject, col);
@@ -223,30 +224,30 @@ public static class ShowTriggers
     }
 
     [HarmonyPatch(typeof(EnemySpawner))]
-    public class ShowSpawners
+    public class EnemySpawnerPatch
     {
-        [HarmonyPatch("Start")]
+        [HarmonyPatch(nameof(EnemySpawner.Start))]
         [HarmonyPostfix]
-        public static void StartPostfix(EnemySpawner __instance) {
-            if (__instance.gameObject.TryGetComponent<MeshRenderer>(out MeshRenderer renderer)) {
+        public static void ColorAndRegisterSpawners(EnemySpawner __instance) {
+            if (__instance.gameObject.TryGetComponent<MeshRenderer>(out var renderer)) {
                 renderer.material.SetColor(baseColor, spawnerColor);
             }
             __instance.gameObject.SetActive(true);
             registry.Add(__instance.gameObject);
         }
 
-        [HarmonyPatch("SpawnEnemy")]
+        [HarmonyPatch(nameof(EnemySpawner.SpawnEnemy))]
         [HarmonyPostfix]
-        public static void SpawnPostfix(EnemySpawner __instance, ref bool __state) {
+        public static void KeepActiveAfterSpawn(EnemySpawner __instance) {
             __instance.gameObject.SetActive(true);
         }
     }
 
     [HarmonyPatch(typeof(PlacedEquipment), nameof(PlacedEquipment.Initialize))]
-    public class ShowEquipment
+    public class PlacedEquipmentPatch
     {
         [HarmonyPostfix]
-        public static void PlacedPostfix(ref PlacedEquipment __instance) {
+        public static void ShowAndRegisterEquipment(PlacedEquipment __instance) {
             MakeVisible(__instance.gameObject, placedEquipmentColor);
             registry.Add(__instance.gameObject);
         }

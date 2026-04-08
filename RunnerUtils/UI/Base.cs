@@ -7,61 +7,67 @@ using HarmonyLib;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
-namespace RunnerUtils.Components.UI
+namespace RunnerUtils.UI
 {
     internal class Base
     {
-        private static UISettingsRoot uiSettingsRootInstance;
+        private static UISettingsRoot m_uiSettingsRootInstance;
+        private static Sprite m_uiMilitarySquareSprite = 
+            Resources
+            .FindObjectsOfTypeAll<Sprite>()
+            .FirstOrDefault(img => img.name == "UI_MilitarySquare");
 
-        public struct CustomSettingTab(string tabName, Type classType)
+        public struct CustomSettingTab(string name, Type type)
         {
-            public string tabName = tabName;
-            public Type classType = classType;
+            public readonly string name = name;
+            public readonly Type type = type;
         }
 
         // just in case this is something we want extendable later
         public static List<CustomSettingTab> CustomTabs { get; } = [
-            new() {
-                tabName = "RunnerUtils",
-                classType = typeof(RunnerUtilsSettings.UISettingsSubMenuCustom)
-            }
+            new(
+                name: "RunnerUtils",
+                type: typeof(UISettingsSubMenuRunnerUtils)
+            )
         ];
 
         // Attaching our custom tabs
-        [HarmonyPatch(typeof(UISettingsRoot), "Start")]
-        public static class PatchUISettingsRootStart
+        [HarmonyPatch(typeof(UISettingsRoot), nameof(UISettingsRoot.Start))]
+        public static class UISettingsRootPatch
         {
             [HarmonyPrefix]
-            public static void Prefix(UISettingsRoot __instance)
-            {
+            public static void AttachTabs(UISettingsRoot __instance) {
                 Mod.Logger.LogInfo("Attaching custom settings");
                 // grab the instance to be used elsewhere
-                uiSettingsRootInstance = __instance;
+                m_uiSettingsRootInstance = __instance;
 
                 // attach all our custom menus
                 CustomTabs.ForEach(customTabInfo =>
                 {
-                    if (!typeof(UISettingsSubMenu).IsAssignableFrom(customTabInfo.classType))
-                        throw new ArgumentException("Settings submenu type must inherit from UISettingsSubMenu");
-                    Mod.Logger.LogInfo($" => Attaching tab {customTabInfo.tabName}");
+                    if (!typeof(UISettingsSubMenu).IsAssignableFrom(customTabInfo.type)) {
+                        throw new ArgumentException($"Settings submenu type \"{customTabInfo.type.FullName}\" must inherit from UISettingsSubMenu");
+                    }
+
+                    Mod.Logger.LogInfo($" => Attaching tab {customTabInfo.name}");
 
                     // i'm using the visual settings as a prefab here, will rip it's guts out in Start
-                    GameObject listingAnchor = __instance.subMenus[0].gameObject.transform.parent.gameObject;
-                    var newMenu = UnityEngine.Object.Instantiate(__instance.subMenus[0].gameObject, listingAnchor.transform);
-                    newMenu.name = $"{customTabInfo.tabName} Settings";
+                    var listingAnchor = __instance.subMenus[0].gameObject.transform.parent.gameObject;
+                    var newMenu = Object.Instantiate(__instance.subMenus[0].gameObject, listingAnchor.transform);
+                    newMenu.name = $"{customTabInfo.name} Settings";
 
                     // clear out the children and component
                     foreach (Transform child in newMenu.transform)
                     {
-                        UnityEngine.Object.Destroy(child.gameObject);
+                        Object.Destroy(child.gameObject);
                     }
-                    UnityEngine.Object.Destroy(newMenu.GetComponent<UISettingsSubMenuVisual>());
+                    Object.Destroy(newMenu.GetComponent<UISettingsSubMenuVisual>());
 
                     // add our custom menu
-                    var uiSettingsSubMenuCustom = newMenu.AddComponent(customTabInfo.classType) as UISettingsSubMenu;
+                    var uiSettingsSubMenuCustom = (newMenu.AddComponent(customTabInfo.type) as UISettingsSubMenu)!;
                     // TODO would be cool to make this text yellow or something configurable
-                    uiSettingsSubMenuCustom.menuName = Text.MakeJumper(customTabInfo.tabName);
+                    uiSettingsSubMenuCustom.menuName = FleeceUtil.MakeJumper(customTabInfo.name);
 
                     // properly add the menu to the subMenus list and make it's sibling index correct (used for switching tabs)
                     var originalLength = __instance.subMenus.Length;
@@ -73,11 +79,10 @@ namespace RunnerUtils.Components.UI
         }
 
         // Now for all the menu elements you can make
-        public static UISettingsOptionToggle MakeToggleOption(Transform parent, Jumper text, bool initialValue)
-        {
+        public static UISettingsOptionToggle MakeToggleOption(Transform parent, Jumper text, bool initialValue) {
             // using 0 (visual), 2 (windowed) as our prefab for a toggle
-            GameObject attemptCountShowToggle = UnityEngine.Object.Instantiate(
-                uiSettingsRootInstance.subMenus[0].transform.GetChild(2).gameObject,
+            var attemptCountShowToggle = Object.Instantiate(
+                m_uiSettingsRootInstance.subMenus[0].transform.GetChild(2).gameObject,
                 parent
             );
             var textSetter = attemptCountShowToggle.transform.GetChild(0).gameObject.GetComponent<FleeceTextSetter>();
@@ -89,11 +94,10 @@ namespace RunnerUtils.Components.UI
             return component;
         }
 
-        public static GameObject MakeHeading(Transform parent, string text, string subtitle = null)
-        {
+        public static GameObject MakeHeading(Transform parent, string text, string subtitle = null) {
             // using 5 (assist), 0 (disclaimer), 0 (Text (TMP) (1)) as our prefab for a heading
-            GameObject disclaimer = UnityEngine.Object.Instantiate(
-                uiSettingsRootInstance.subMenus[5].transform.GetChild(0).gameObject,
+            var disclaimer = Object.Instantiate(
+                m_uiSettingsRootInstance.subMenus[5].transform.GetChild(0).gameObject,
                 parent
             );
             disclaimer.transform.name = text;
@@ -120,7 +124,7 @@ namespace RunnerUtils.Components.UI
             }
             else
             {
-                UnityEngine.Object.Destroy(subtitleComp.gameObject);
+                Object.Destroy(subtitleComp.gameObject);
             }
 
             return disclaimer;
@@ -128,8 +132,7 @@ namespace RunnerUtils.Components.UI
 
         // To make a tab's content scrollable
         // Might need to change this later when you use it on other tabs, but to start I use this on Rebinding
-        public static GameObject MakeScrollable(GameObject uiElement)
-        {
+        public static GameObject MakeScrollable(GameObject uiElement) {
             // Idea here is to wrap the regular content (which contains the VerticalLayoutGroup) under a ScrollRect,
             //   which has a scrollbar + viewport (content goes in viewport)
 
@@ -137,7 +140,7 @@ namespace RunnerUtils.Components.UI
             oldLayout.enabled = false;
 
             // scroll rectum
-            GameObject scrollRectObj = new GameObject("RunnerUtils Scroll", typeof(RectTransform));
+            var scrollRectObj = new GameObject("RunnerUtils Scroll", typeof(RectTransform));
             scrollRectObj.transform.SetParent(uiElement.transform, false);
 
             var scrollRT = scrollRectObj.GetComponent<RectTransform>();
@@ -177,14 +180,10 @@ namespace RunnerUtils.Components.UI
             handleRT.offsetMax = Vector2.zero;
 
             // UI military square is the image that's stretched and use in basically every UI element
-            Sprite militarySprite = Resources
-                .FindObjectsOfTypeAll<Sprite>()
-                .FirstOrDefault(img => img.name == "UI_MilitarySquare");
-
-            if (militarySprite != null)
+            if (m_uiMilitarySquareSprite)
             {
-                Image handleImage = handleRT.GetComponent<Image>();
-                handleImage.sprite = militarySprite;
+                var handleImage = handleRT.GetComponent<Image>();
+                handleImage.sprite = m_uiMilitarySquareSprite;
                 handleImage.type = Image.Type.Sliced;
                 handleImage.preserveAspect = false;
                 handleImage.pixelsPerUnitMultiplier = 3f;
@@ -200,7 +199,7 @@ namespace RunnerUtils.Components.UI
             scrollbar.handleRect = handleRT;
             scrollbar.targetGraphic = handle.GetComponent<UnityEngine.UI.Image>();
 
-            ScrollRect scrollRect = scrollRectObj.AddComponent<ScrollRect>();
+            var scrollRect = scrollRectObj.AddComponent<ScrollRect>();
             scrollRect.verticalScrollbar = scrollbar;
             scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
             scrollRect.vertical = true;
@@ -224,7 +223,7 @@ namespace RunnerUtils.Components.UI
             img.raycastTarget = true;
 
             // setup content with layout group and content size filter
-            GameObject scrollContentRectObj = new GameObject("RunnerUtils Scroll Content", typeof(RectTransform));
+            var scrollContentRectObj = new GameObject("RunnerUtils Scroll Content", typeof(RectTransform));
             scrollContentRectObj.transform.SetParent(viewport.transform, false);
 
             var contentRT = scrollContentRectObj.GetComponent<RectTransform>();
@@ -239,11 +238,11 @@ namespace RunnerUtils.Components.UI
 
             // scroll to top immediately (wait until next frame because it has to calculate layout)
             // otherwise, it starts in the midle
-            scrollRect.StartCoroutine(FixScrollOnNextFrame(scrollRect));
-            IEnumerator FixScrollOnNextFrame(ScrollRect sr)
+            scrollRect.StartCoroutine(FixScrollOnNextFrame());
+            IEnumerator FixScrollOnNextFrame()
             {
                 yield return null;
-                sr.verticalNormalizedPosition = 1f;
+                scrollRect.verticalNormalizedPosition = 1f;
             }
 
             // Setup our new content game object with our children and what have you
@@ -257,7 +256,7 @@ namespace RunnerUtils.Components.UI
             newLayout.childForceExpandHeight = oldLayout.childForceExpandHeight;
             newLayout.childAlignment = TextAnchor.UpperCenter;
 
-            GameObject.Destroy(oldLayout); // Done with you
+            Object.Destroy(oldLayout); // Done with you
 
             var fitter = scrollContentRectObj.AddComponent<ContentSizeFitter>();
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -266,7 +265,7 @@ namespace RunnerUtils.Components.UI
             var childrenCount = uiElement.transform.childCount;
             for (int i = 0; i < childrenCount; i++)
             {
-                RectTransform child = uiElement.transform.GetChild(0) as RectTransform;
+                var child = (uiElement.transform.GetChild(0) as RectTransform)!;
                 Vector2 anchoredPos = child.anchoredPosition;
                 Vector2 anchorMin = child.anchorMin;
                 Vector2 anchorMax = child.anchorMax;

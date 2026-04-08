@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using static RunnerUtils.Components.RUInputManager;
 
-namespace RunnerUtils.Components.UI
+namespace RunnerUtils.UI
 {
     internal class Rebinding
     {
@@ -121,7 +121,7 @@ namespace RunnerUtils.Components.UI
             var newRebind = UnityEngine.Object.Instantiate(prefab, parent);
             newRebind.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().text = bindingInfo.identifier;
             var optionRebindComp = newRebind.GetComponent<UISettingsOptionRebind>();
-            optionRebindComp.passageActionName = Text.MakeJumper(bindingInfo.identifier);
+            optionRebindComp.passageActionName = FleeceUtil.MakeJumper(bindingInfo.identifier);
             optionRebindComp.actionDescription.text = bindingInfo.identifier;
 
             var map = GameManager.instance.inputManager.playerInput.actions.FindActionMap("Default Action Map");

@@ -8,7 +8,7 @@ public class MovementDebug : ComponentBase<MovementDebug>
     public override string Identifier => "Advanced Movement Info";
     public override bool ShowOnFairPlay => false;
 
-    private static InGameLog igl = new InGameLog($"{Mod.pluginName}~Movement Info", 10);
+    private static InGameLog igl = new($"{PluginInfo.PLUGIN_NAME}~Movement Info", 10);
 
     public void Init() {
         igl.anchoredPos = new Vector2(-425, 535);
@@ -26,11 +26,11 @@ public class MovementDebug : ComponentBase<MovementDebug>
         igl.Hide();
     }
     
-    [HarmonyPatch(typeof(PlayerMovement), "Update")]
-    public class LogMovement
+    [HarmonyPatch(typeof(PlayerMovement), nameof(PlayerMovement.Update))]
+    public class PlayerMovementPatch
     {
         [HarmonyPostfix]
-        public static void Postfix(PlayerMovement __instance, ref int ___dropOnEnemyFrames, ref int ___fallLevel, ref float ___coyoteTimer, ref float ___vMomentum) {
+        public static void LogMovement(PlayerMovement __instance, ref int ___dropOnEnemyFrames, ref int ___fallLevel, ref float ___coyoteTimer, ref float ___vMomentum) {
             if (!Instance.enabled) return;
             igl.SetBufferLine(0, $"Hard falling: {__instance.IsHardFalling()}");
             igl.SetBufferLine(1, $"Drop frames: {___dropOnEnemyFrames}");

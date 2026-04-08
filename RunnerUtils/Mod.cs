@@ -2,23 +2,20 @@
 using BepInEx.Logging;
 using HarmonyLib;
 using RunnerUtils.Components;
-using RunnerUtils.Components.UI;
+using RunnerUtils.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace RunnerUtils;
 
-[BepInPlugin(pluginGuid, pluginName, pluginVersion)]
+[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class Mod : BaseUnityPlugin
 {
-    public const string pluginGuid = "kestrel.iamyourbeast.runnerutils";
-    public const string pluginName = "Runner Utils";
-    public const string pluginVersion = "2.4.2";
 
     public static Mod Instance { get; private set; }
     private static RUInputManager InputManager { get; set; } = new();
-    public static InGameLog Igl { get; private set; } = new InGameLog($"{pluginName}~Ingame Log (v{pluginVersion})");
+    public static InGameLog Igl { get; private set; } = new InGameLog($"{PluginInfo.PLUGIN_NAME}~Ingame Log (v{PluginInfo.PLUGIN_VERSION})");
     internal static new ManualLogSource Logger;
 
     private static string loadBearingColonThree = ":3";
@@ -30,15 +27,13 @@ public class Mod : BaseUnityPlugin
         Instance = this;
         Logger = base.Logger;
 
-        RunnerUtilsSettings.InitialiseConfig();
-        new Harmony(pluginGuid).PatchAll();
+        Configs.Init(Config);
+        new Harmony(PluginInfo.PLUGIN_GUID).PatchAll();
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        
         Logger.LogInfo("Hiiiiiiiiiiii :3");
     }
-
-    private void OnEnable() {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
+    
     private void Update() {
         if (GameManager.instance.player is not null) {
             FairPlay.Update();
@@ -50,10 +45,9 @@ public class Mod : BaseUnityPlugin
         ViewCones.OnSceneLoad();
     }
 
-    [HarmonyPatch(typeof(Player))]
-    public class PatchPlayer
+    [HarmonyPatch(typeof(Player), nameof(Player.Initialize))]
+    public class PlayerPatch
     {
-        [HarmonyPatch("Initialize")]
         [HarmonyPostfix]
         public static void PlayerInitPostfix() {
             ShowTriggers.RegisterAll();
@@ -65,13 +59,12 @@ public class Mod : BaseUnityPlugin
         }
     }
 
-    [HarmonyPatch(typeof(PlayerMovement))]
-    public class PatchPlayerMovement
+    [HarmonyPatch(typeof(PlayerMovement), nameof(PlayerMovement.Initialize))]
+    public class PlayerMovementPatch
     {
-        [HarmonyPatch("Initialize")]
         [HarmonyPostfix]
-        public static void MovementInitPostfix(CharacterController ___controller) {
-            if (RunnerUtilsSettings.WalkabilityOverlayEnabled) {
+        public static void InitWalkabilityOverlay(CharacterController ___controller) {
+            if (Configs.WalkabilityOverlayEnabled) {
                 foreach (var t in Terrain.activeTerrains) {
                     var terrainData = t.terrainData;
                     WalkabilityOverlay.MakeWalkabilityTex(ref  terrainData, ___controller.slopeLimit);
@@ -81,7 +74,7 @@ public class Mod : BaseUnityPlugin
         }
     }
 
-    [HarmonyPatch(typeof(HUDLevelTimer), "Update")]
+    [HarmonyPatch(typeof(HUDLevelTimer), nameof(HUDLevelTimer.Update))]
     public class The
     {
         [HarmonyPostfix]

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace RunnerUtils;
+namespace RunnerUtils.Components;
 
 public abstract class ComponentBase
 {

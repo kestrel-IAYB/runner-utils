@@ -1,5 +1,5 @@
 ﻿using RunnerUtils.Components;
-using RunnerUtils.Components.UI;
+using RunnerUtils.UI;
 using UnityEngine;
 
 namespace RunnerUtils;
@@ -25,7 +25,7 @@ public static class FairPlay
             igl.LogLine(comp.Identifier);
         }
         if (triggersModified) igl.LogLine("Triggers");
-        if (LocationSave.savedPosition.HasValue || LocationSave.savedRotation.HasValue) igl.LogLine($"Location Saved{(RunnerUtilsSettings.SaveLocationVerboseEnabled ? $" ({LocationSave.StringLoc})":"")}");
+        if (LocationSave.savedPosition.HasValue || LocationSave.savedRotation.HasValue) igl.LogLine($"Location Saved{(Configs.SaveLocationVerboseEnabled ? $" ({LocationSave.StringLoc})":"")}");
 
     }
 }
