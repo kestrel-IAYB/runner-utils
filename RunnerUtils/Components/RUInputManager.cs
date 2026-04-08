@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Enemy;
-using RunnerUtils.UI;
 
 namespace RunnerUtils.Components;
 
 public class RUInputManager
 {
-    public struct BindingInfo(string identifier, Action action, string guidKbm, string guidGamepad, string defaultKeyPath = Rebinding.UNBOUND_KEY)
+    public struct BindingInfo(string identifier, Action action, string guidKbm, string guidGamepad, string defaultKeyPath = "")
     {
         public readonly Action action = action;
         public readonly string identifier = identifier;

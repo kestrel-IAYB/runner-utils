@@ -20,12 +20,10 @@ namespace RunnerUtils.UI;
      private static Jumper m_throwCamUnlockCameraText = FleeceUtil.MakeJumper("Unlock Camera");
      private static Jumper m_throwCamAutoSwitchText = FleeceUtil.MakeJumper("Auto Switch");
 
-     public override void Start() {
-         base.Start();
-
+     public void Awake() {
          // TODO: once this gets too big for the window
          // (if it's smaller than the window it's buggy for some reason, TODO fix that)
-         var content = Base.MakeScrollable(gameObject);
+         var content = Base.MakeMenuScrollable(this);
 
          // setup our settings
          var heading = Base.MakeHeading(
@@ -53,7 +51,6 @@ namespace RunnerUtils.UI;
 
      public override void SaveSettings() {
          base.SaveSettings();
-
          Configs.SkipSplashCardsEnabled = m_skipSplashCardsToggle.GetToggled();
          Configs.WalkabilityOverlayEnabled = m_walkabilityOverlayToggle.GetToggled();
          Configs.SaveLocationVerboseEnabled = m_verboseLocationSaveToggle.GetToggled();
@@ -61,7 +58,5 @@ namespace RunnerUtils.UI;
 
          Configs.ThrowCamUnlockCameraEnabled = m_throwCamUnlockCameraToggle.GetToggled();
          Configs.ThrowCamAutoSwitchEnabled = m_throwCamAutoSwitchToggle.GetToggled();
-
-         Mod.Instance.Config.Save();
      }
  }

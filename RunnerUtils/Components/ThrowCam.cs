@@ -1,6 +1,5 @@
 ﻿using AimAssist;
 using HarmonyLib;
-using RunnerUtils.UI;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using Object = UnityEngine.Object;

@@ -2,7 +2,6 @@
 using BepInEx.Logging;
 using HarmonyLib;
 using RunnerUtils.Components;
-using RunnerUtils.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;

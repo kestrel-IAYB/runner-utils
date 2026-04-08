@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Progress;
-using RunnerUtils.UI;
 
 namespace RunnerUtils.Patches;
 

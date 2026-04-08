@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Fleece;
 using HarmonyLib;
+using RunnerUtils.Components;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -129,19 +131,43 @@ namespace RunnerUtils.UI
 
             return disclaimer;
         }
+        
+        public static void MakeRebind(Transform parent, GameObject prefab, RUInputManager.BindingInfo bindingInfo)
+        {
+            var newRebind = Object.Instantiate(prefab, parent);
+            newRebind.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>().text = bindingInfo.identifier;
+            var optionRebindComp = newRebind.GetComponent<UISettingsOptionRebind>();
+            optionRebindComp.passageActionName = FleeceUtil.MakeJumper(bindingInfo.identifier);
+            optionRebindComp.actionDescription.text = bindingInfo.identifier;
+
+            var map = GameManager.instance.inputManager.playerInput.actions.FindActionMap("Default Action Map");
+
+            var kbm = map.actions.FirstOrDefault(act => act.name == $"RunnerUtils {bindingInfo.identifier} (kbm)");
+            var gamepad = map.actions.FirstOrDefault(act => act.name == $"RunnerUtils {bindingInfo.identifier} (gamepad)");
+            if (kbm == null || gamepad == null)
+            {
+                // by this point these should have already been made
+                throw new Exception($"InputAction(s) for \"{bindingInfo.identifier}\" were unexpectedly not found");
+            }
+
+            optionRebindComp.actions = [
+                InputActionReference.Create(kbm),
+                InputActionReference.Create(gamepad),
+            ];
+        }
 
         // To make a tab's content scrollable
         // Might need to change this later when you use it on other tabs, but to start I use this on Rebinding
-        public static GameObject MakeScrollable(GameObject uiElement) {
+        public static GameObject MakeMenuScrollable(UISettingsSubMenu menu) {
             // Idea here is to wrap the regular content (which contains the VerticalLayoutGroup) under a ScrollRect,
             //   which has a scrollbar + viewport (content goes in viewport)
 
-            var oldLayout = uiElement.GetComponent<VerticalLayoutGroup>();
+            var oldLayout = menu.GetComponent<VerticalLayoutGroup>();
             oldLayout.enabled = false;
 
             // scroll rectum
             var scrollRectObj = new GameObject("RunnerUtils Scroll", typeof(RectTransform));
-            scrollRectObj.transform.SetParent(uiElement.transform, false);
+            scrollRectObj.transform.SetParent(menu.transform, false);
 
             var scrollRT = scrollRectObj.GetComponent<RectTransform>();
             scrollRT.anchorMin = Vector2.zero;
@@ -262,10 +288,10 @@ namespace RunnerUtils.UI
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             // Move children over
-            var childrenCount = uiElement.transform.childCount;
+            var childrenCount = menu.transform.childCount;
             for (int i = 0; i < childrenCount; i++)
             {
-                var child = (uiElement.transform.GetChild(0) as RectTransform)!;
+                var child = (menu.transform.GetChild(0) as RectTransform)!;
                 Vector2 anchoredPos = child.anchoredPosition;
                 Vector2 anchorMin = child.anchorMin;
                 Vector2 anchorMax = child.anchorMax;

@@ -16,8 +16,8 @@ internal static class Configs
     public static void Init(ConfigFile config) {
         m_skipSplashCardsEntry = config.Bind("Options", "Skip Splash Cards", false, "Skip the splash cards on boot");
 
-        m_throwCamUnlockCameraEntry = config.Bind("Throw Cam", "Unlock Camera", false, "Unlock the camera when in throw cam");
         m_throwCamRangeScaleEntry = config.Bind("Throw Cam", "Camera Range", 0.2f, new ConfigDescription("Follow range of the throw cam", new AcceptableValueRange<float>(0.01f, 3.0f)));
+        m_throwCamUnlockCameraEntry = config.Bind("Throw Cam", "Unlock Camera", false, "Unlock the camera when in throw cam");
         m_throwCamAutoSwitchEntry = config.Bind("Throw Cam", "Auto Switch", false, "Automatically switch to throw cam when a projectile is thrown");
         m_walkabilityOverlayEntry = config.Bind("Walkability Overlay", "Enable", false, "Makes all walkable surfaces appear snowy, and all unwalkable surfaces appear black");
 
@@ -30,17 +30,17 @@ internal static class Configs
         get => m_skipSplashCardsEntry.Value;
         set => m_skipSplashCardsEntry.Value = value;
     }
-
-    public static bool ThrowCamUnlockCameraEnabled {
-        get => m_throwCamUnlockCameraEntry.Value;
-        set =>  m_throwCamUnlockCameraEntry.Value = value;
-    }
-
+    
     public static float ThrowCamRangeScale {
         get => m_throwCamRangeScaleEntry.Value;
         set => m_throwCamRangeScaleEntry.Value = value;
     }
-
+    
+    public static bool ThrowCamUnlockCameraEnabled {
+        get => m_throwCamUnlockCameraEntry.Value;
+        set =>  m_throwCamUnlockCameraEntry.Value = value;
+    }
+    
     public static bool ThrowCamAutoSwitchEnabled {
         get => m_throwCamAutoSwitchEntry.Value;
         set => m_throwCamAutoSwitchEntry.Value = value;
