@@ -143,7 +143,6 @@ namespace RunnerUtils.UI
                         new CodeInstruction(OpCodes.Ldarg_0),
                         new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(UISettingsRebindUIPatch), nameof(ApplyExtraRebindingOperations)))
                     )
-                    .Dump()
                     .InstructionEnumeration();
             }
         }
