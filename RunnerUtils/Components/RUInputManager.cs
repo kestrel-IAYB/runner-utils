@@ -4,6 +4,7 @@ using Enemy;
 
 namespace RunnerUtils.Components;
 
+// TODO this needs to like. not be in components. but components are getting exploded eventually anyway
 public class RUInputManager
 {
     public struct BindingInfo(string identifier, Action action, string guidKbm, string guidGamepad, string defaultKeyPath = "")
@@ -67,6 +68,17 @@ public class RUInputManager
                 if (!GameManager.instance.player.GetHUD()) return;
                 InfiniteAmmo.Instance.Toggle();
                 Mod.Igl.LogLine($"Toggled infinite ammo");
+            }
+        ),
+        new(
+            guidKbm: "3f31a91c-1a20-49d8-9672-ff1e528b2501",
+            guidGamepad: "3f31a91c-1a20-49d8-9672-ff1e528b25A1",
+            identifier: "Toggle Infinite Health",
+            defaultKeyPath: "<Keyboard>/comma",
+            action: () => {
+                if (!GameManager.instance.player.GetHUD()) return;
+                InfiniteHealth.Instance.Toggle();
+                Mod.Igl.LogLine($"Toggled infinite health");
             }
         ),
         new(

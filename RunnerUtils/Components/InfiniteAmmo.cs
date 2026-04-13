@@ -6,7 +6,7 @@ namespace RunnerUtils.Components;
 
 public class InfiniteAmmo : ComponentBase<InfiniteAmmo>
 {
-    public override string Identifier => "Ammo";
+    public override string Identifier => "Infinite Ammo";
     public override bool ShowOnFairPlay => true;
 
     public override void Enable() {
