@@ -1,0 +1,7 @@
+{
+  "name": "RunnerUtils",
+  "version_number": "3.4.2",
+  "website_url": "https://github.com/sneakykestrel/IAYB-runner-utils",
+  "description": "Utilities for IAYB speedrunning",
+  "dependencies": []
+}

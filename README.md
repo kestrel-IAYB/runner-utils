@@ -21,6 +21,7 @@ The default binds are:
 - Toggle log visibility: `K`
 - Clear log: `J`
 - Toggle infinite ammo: `L`
+- Toggle infinite health: `Comma`
 - Toggle throw cam: `Semicolon`
 - Save location: `Left bracket`
 - Load location: `Right bracket`
